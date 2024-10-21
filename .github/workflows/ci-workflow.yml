@@ -39,9 +39,9 @@ jobs:
         run: |
           pip install pytest pytest-cov
       
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
-          pytest
+          pytest --cov=./ --cov-report=html
       
       - name: Upload test coverage report
         uses: actions/upload-artifact@v3
