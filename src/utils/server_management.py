@@ -5,7 +5,7 @@ import shutil
 from discord import PartialEmoji
 import discord
 
-def add_server(server_id: int) -> None:
+def add_server(server_id : int) -> None:
     """Adds a server to the list of servers.
 
     Args:
@@ -20,7 +20,7 @@ def add_server(server_id: int) -> None:
         os.makedirs(server_folder)
         shutil.copy('data/templates/server_config.json', f'{server_folder}/config.json')
         with open(f'{server_folder}/temp_voice_channels.txt', 'w', encoding='utf-8') as file:
-            file.write('')         
+            file.write('')
 
 def remove_from_server_list(server_id) -> None:
     """Removes a server from the list of servers.
