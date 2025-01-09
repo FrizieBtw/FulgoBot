@@ -1,4 +1,4 @@
 # TyrBot
 Source code of TyrBot discord bot.
-## About me
-[Contact Me!](mailto:amaralpauloalberto@gmail.com) / [Check out my portfolio!](https://friziebtw.github.io/portfolio)
+
+To run the bot, install the requirements, put your bot token and your youtube api key in the src/utils/tokens_and_keys.py file and run the main.py file.
