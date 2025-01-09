@@ -11,13 +11,16 @@ def add_server(server_id : int) -> None:
     Args:
         server_id (int): Server's ID.
     """
-    servers_list : list = os.listdir('data/servers')
-    if server_id not in servers_list:
-        server_folder : str = f'data/servers/{server_id}'
+    if not os.path.exists('data/servers'):
+        print('Creating servers folder...')
+        os.makedirs('data/servers')
+    servers_list: list = os.listdir('data/servers')
+    if str(server_id) not in servers_list:
+        server_folder: str = f'data/servers/{server_id}'
         os.makedirs(server_folder)
         shutil.copy('data/templates/server_config.json', f'{server_folder}/config.json')
         with open(f'{server_folder}/temp_voice_channels.txt', 'w', encoding='utf-8') as file:
-            file.write('')            
+            file.write('')
 
 def remove_from_server_list(server_id) -> None:
     """Removes a server from the list of servers.
