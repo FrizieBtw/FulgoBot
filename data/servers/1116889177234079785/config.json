@@ -1,0 +1,27 @@
+{
+    "language": "fr",
+    "logs_channel_id": "1119705016744288276",
+    "welcome_system": {
+        "active": true,
+        "welcome_message_template": "Welcome to {server}, {member}!",
+        "channel_id": null,
+        "background_image": "data/servers/1116889177234079785/welcome_background.jpg"
+    },
+    "role_react": {},
+    "join_to_create_channel_system": {
+        "channel_name_template": "{member}'s channel",
+        "join_to_create_channels_id": []
+    },
+    "youtube_survey": {
+        "new_video_message_template": "\ud83c\udfac {youtube_channel} just posted a new video! {youtube_video}",
+        "channel_id": "1116889178286870551",
+        "youtube_channels_id": {}
+    },
+    "help_system": {
+        "help_channel_name_template": "ticket-{member}",
+        "help_category_id": 1325954513093525594,
+        "channels_id": {
+            "1326964196084027402": "1119695124402802789"
+        }
+    }
+}

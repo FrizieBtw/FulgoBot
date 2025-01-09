@@ -1,0 +1,29 @@
+{
+    "language": "en",
+    "logs_channel_id": null,
+    "welcome_system": {
+        "active" : false,
+        "welcome_message_template": "Welcome to {server}, {member}!",
+        "channel_id": null,
+        "background_image": null
+    },
+    "role_react": {
+    },
+    "join_to_create_channel_system": {
+        "channel_name_template": "{member}'s channel",
+        "join_to_create_channels_id" : [
+        ]
+    },
+    "youtube_survey": {
+        "new_video_message_template" : "🎬 {youtube_channel} just posted a new video! {youtube_video}",
+        "channel_id": null,
+        "youtube_channels_id": {
+        }
+    },
+    "help_system": {
+        "help_channel_name_template" : "ticket-{member}",
+        "help_category_id" : null,
+        "channels_id": {
+        }
+    }
+}
