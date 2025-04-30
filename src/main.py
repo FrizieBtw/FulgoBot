@@ -303,6 +303,19 @@ async def set_welcome_background(ctx : commands.Context, background_image : disc
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["welcome_background_image_defined"])
     
+@tyrBot.slash_command(name = "remove_welcome_background", description = "Removes the personalized welcome card background image.")
+@commands.has_permissions(administrator=True)
+async def remove_welcome_background(ctx : commands.Context):
+    os.remove(f"data/servers/{ctx.guild.id}/welcome_background.jpg")
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
+        config : dict[str, any] = json.load(file)
+    config["welcome_system"]["background_image"] = None
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
+        json.dump(config, file, indent=4)
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
+        lang : dict[str, any] = json.load(file)
+    await ctx.respond(lang["welcome_background_image_removed"])
+    
 @tyrBot.slash_command(name = "set_welcome_message_template", description = "Defines the message to be set as the welcome message.")
 @commands.has_permissions(administrator=True)
 @discord.option(name="message_template", description="The message to be set as the welcome message.")

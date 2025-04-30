@@ -4,6 +4,7 @@
     "language_defined": "✅ Language successfully defined.",
     "welcome_system_switched": "✅ Welcome system successfully switched.",
     "welcome_background_image_defined": "✅ Welcome background image successfully defined.",
+    "welcome_background_image_removed": "✅ Welcome personalized background image successfully removed.",
     "welcome_message_defined": "✅ Welcome message successfully defined.",
     "role_react_added": "✅ Role react successfully added.",
     "role_react_removed": "✅ Role react successfully removed.",
