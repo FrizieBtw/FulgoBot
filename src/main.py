@@ -48,7 +48,7 @@ async def on_member_join(member : discord.Member) -> None:
       
     welcome_card = await utils.image_utils.generate_welcome_card(member, background_image) 
     
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await member.guild.system_channel.send(file=discord.File(fp=welcome_card, filename="welcome_card.png"), content=f"{lang['welcome_message']}".format_map({"member": member.mention, "server": member.guild.name}))
     
@@ -74,11 +74,11 @@ async def on_raw_reaction_add(payload : discord.RawReactionActionEvent) -> None:
         try:
             await member.add_roles(role)
         except:
-            with open(f"data/servers/{guild_id}/config.json", "r") as file:
+            with open(f"data/servers/{guild_id}/config.json", mode="r", encoding="utf8") as file:
                 config : dict[str, any] = json.load(file)
             if config["logs_channel_id"]:
                 logs_channel : discord.abc.MessageableChannel = await guild.fetch_channel(int(config["logs_channel_id"]))
-            with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+            with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
                 lang : dict[str, any] = json.load(file)
             await logs_channel.send(lang["role_add_delete_error_log"])
         
@@ -99,23 +99,23 @@ async def on_raw_reaction_remove(payload : discord.RawReactionActionEvent) -> No
         try:
             await member.remove_roles(role)
         except:
-            with open(f"data/servers/{guild_id}/config.json", "r") as file:
+            with open(f"data/servers/{guild_id}/config.json", mode="r", encoding="utf8") as file:
                 config : dict[str, any] = json.load(file)
             if config["logs_channel_id"]:
                 logs_channel : discord.TextChannel = await guild.fetch_channel(int(config["logs_channel_id"]))
-            with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+            with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
                 lang : dict[str, any] = json.load(file)
             await logs_channel.send(lang["role_add_delete_error_log"])
                
 @tyrBot.event
 async def on_voice_state_update(member : discord.Member, before : discord.VoiceState, after : discord.VoiceState) -> None:
     if before.channel and len(before.channel.members) == 0:
-        with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", "r") as file:
+        with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", mode="r", encoding="utf8") as file:
             data : list[str] = file.read().splitlines()
             
         if str(before.channel.id) in data:
             await before.channel.delete()
-            with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", "w") as file:
+            with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", mode="w", encoding="utf8") as file:
                 
                 for line in data:
                     
@@ -129,7 +129,7 @@ async def on_voice_state_update(member : discord.Member, before : discord.VoiceS
             if str(after.channel.id) in config['join_to_create_channel_system']['join_to_create_channels_id']:
                 private_channel : discord.VoiceChannel = await member.guild.create_voice_channel(name=config['join_to_create_channel_system']['channel_name_template'].format_map({"member": member.name}), category=after.channel.category)
                 
-                with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", "w") as file:
+                with open(f"data/servers/{member.guild.id}/temp_voice_channels.txt", mode="w", encoding="utf8") as file:
                     file.write(f"{private_channel.id}\n")
                 await member.move_to(private_channel)                    
                 await private_channel.set_permissions(member, connect=True, mute_members=True, deafen_members=True, move_members=True, manage_channels=True, manage_permissions=True)
@@ -144,7 +144,7 @@ async def check_new_videos():
 
     async with aiohttp.ClientSession() as session:
         for server_id in servers_list:
-            with open(f"data/servers/{server_id}/config.json", "r") as file:
+            with open(f"data/servers/{server_id}/config.json", mode="r", encoding="utf8") as file:
                 config : dict[str, any] = json.load(file)
 
             for ytb_channel_id in config["youtube_survey"]["youtube_channels_id"]:
@@ -175,7 +175,7 @@ async def check_new_videos():
                     }))
                     config["youtube_survey"]["youtube_channels_id"][str(ytb_channel_id)] = video_id
 
-                    with open(f"data/servers/{server_id}/config.json", "w") as file:
+                    with open(f"data/servers/{server_id}/config.json", mode="w", encoding="utf8") as file:
                         json.dump(config, file, indent=4)
 
 ##################### NORMAL COMMANDS #####################
@@ -189,9 +189,9 @@ async def help(ctx : commands.Context) -> None:
     command : discord.commands.SlashCommand = None
     for command in tyrBot.all_commands.values():
         embed.add_field(name=f"/{command.name}", value=command.description, inline=False)
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     embed.add_field(name="Message's templates cheatsheet", value=lang["message_template_cheat_sheet"], inline=False)
     
@@ -222,9 +222,9 @@ async def generate_qr(ctx : commands.Context, content: str) -> None:
     qr_image_bytes.seek(0)
     if ctx.author.dm_channel is None:
         await ctx.author.create_dm()
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.author.dm_channel.send(file=discord.File(qr_image_bytes, "qr_code.png"), content=lang["qr_code_message"])
     await ctx.respond(lang["qr_code_sent"])
@@ -240,12 +240,12 @@ async def set_language(ctx : commands.Context, language_prefix : str):
     Args:
         language (str): The language to be set.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
     config["language"] = language_prefix
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
-    with open(f"data/templates/{language_prefix}_lang.json", "r") as file:
+    with open(f"data/templates/{language_prefix}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["language_defined"])
 
@@ -259,12 +259,12 @@ async def set_logs_channel(ctx : commands.Context, channel : discord.TextChannel
     Args:
         channel (discord.TextChannel): The channel to be set as the logs channel.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
     config["logs_channel_id"] = str(channel.id)
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["logs_channel_defined"])
     
@@ -274,12 +274,12 @@ async def switch_welcome_system(ctx : commands.Context):
     """
     Enables/disables the welcome system.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
     config["welcome_system"]["active"] = not config["welcome_system"]["active"]
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["welcome_system_switched"])
     
@@ -293,13 +293,13 @@ async def set_welcome_background(ctx : commands.Context, background_image : disc
     Args:
         background_image (discord.Attachment): The image to be set as the welcome card background.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
     await background_image.save(f"data/servers/{ctx.guild.id}/welcome_background.jpg")
     config["welcome_system"]["background_image"] = f"data/servers/{ctx.guild.id}/welcome_background.jpg"
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["welcome_background_image_defined"])
     
@@ -313,12 +313,12 @@ async def set_welcome_message_template(ctx : commands.Context, message_template 
     Args:
         message_template (str): The message to be set as the welcome message.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
     config["welcome_system"]["welcome_message_template"] = message_template
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     await ctx.respond(lang["welcome_message_defined"])
     
@@ -338,9 +338,9 @@ async def add_role_react(ctx : commands.Context, emoji: str, role: discord.Role,
         message_id (str): The id of the message to which the role react will be added.
         channel (discord.TextChannel, optional): The channel in which the message is located. If not specified, the actual channel will be used. 
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if str(message_id) in config["role_react"].keys() and emoji in config["role_react"][str(message_id)].keys():
@@ -349,7 +349,7 @@ async def add_role_react(ctx : commands.Context, emoji: str, role: discord.Role,
         
     config["role_react"][str(message_id)] = {}
     config["role_react"][str(message_id)][emoji] = str(role.id)
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
         
     if channel is None:
@@ -373,9 +373,9 @@ async def remove_role_react(ctx : commands.Context, emoji: str, message_id : str
         message_id (str): The id of the message from which the role react will be removed.
         channel (discord.TextChannel, optional): The channel in which the message is located. If not specified, the actual channel will be used.
     """ 
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if not emoji in config["role_react"][message_id].keys():
@@ -385,7 +385,7 @@ async def remove_role_react(ctx : commands.Context, emoji: str, message_id : str
     config["role_react"][str(message_id)].pop(emoji)
     if len(config["role_react"][str(message_id)].keys()) == 0:
         config["role_react"].pop(str(message_id))
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
         
     if channel is None:
@@ -405,9 +405,9 @@ async def add_join_to_create_channel(ctx : commands.Context, channel : discord.V
     Args:
         channel (discord.VoiceChannel): The voice channel to be set as a private voice channel creator.
     """
-    with open(f"data/servers/{channel.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{channel.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if str(channel.id) in config["join_to_create_channel_system"]:
@@ -415,7 +415,7 @@ async def add_join_to_create_channel(ctx : commands.Context, channel : discord.V
         return
     
     config["join_to_create_channel_system"]["join_to_create_channels_id"].append(str(channel.id))
-    with open(f"data/servers/{channel.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{channel.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
     await ctx.respond(lang["join_to_create_channel_added"])
     
@@ -429,9 +429,9 @@ async def remove_join_to_create_channel(ctx : commands.Context, channel : discor
     Args:
         channel (discord.VoiceChannel): The voice channel to be removed from the private voice channel creators.
     """
-    with open(f"data/servers/{channel.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{channel.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if not str(channel.id) in config["join_to_create_channel_system"]["join_to_create_channels_id"]:
@@ -439,7 +439,7 @@ async def remove_join_to_create_channel(ctx : commands.Context, channel : discor
         return
     
     config["join_to_create_channel_system"]["join_to_create_channels_id"].remove(str(channel.id))
-    with open(f"data/servers/{channel.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{channel.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
     await ctx.respond(lang["join_to_create_channel_removed"])
 
@@ -455,20 +455,20 @@ async def add_ytb(ctx : commands.Context, ytb_channel_id : str, dc_channel : dis
         ytb_channel_id (str): The id of the youtube channel to be watched.
         dc_channel (discord.TextChannel, optional): The discord channel in which the new videos will be posted. If not specified, the actual channel will be used.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if dc_channel is not None:
         config["youtube_survey"]["channel_id"] = str(dc_channel.id)
-        with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+        with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
             json.dump(config, file, indent=4)
     else:
         dc_channel : discord.TextChannel = await ctx.guild.fetch_channel(int(config["youtube_survey"]["channel_id"])) if config["youtube_survey"]["channel_id"] else ctx.channel
         if not config["youtube_survey"]["channel_id"]:
             config["youtube_survey"]["channel_id"] = str(dc_channel.id)
-            with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+            with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
                 json.dump(config, file, indent=4)
     
     if ytb_channel_id in config["youtube_survey"]["youtube_channels_id"].keys():
@@ -476,7 +476,7 @@ async def add_ytb(ctx : commands.Context, ytb_channel_id : str, dc_channel : dis
         return
     
     config["youtube_survey"]["youtube_channels_id"][str(ytb_channel_id)] = None
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
     
     rss_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={ytb_channel_id}"
@@ -504,9 +504,9 @@ async def remove_ytb(ctx : commands.Context, ytb_channel_id : str):
     Args:
         ytb_channel_id (str): The id of the youtube channel to be removed.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     
     if not ytb_channel_id in config["youtube_survey"]["youtube_channels_id"].keys():
@@ -514,7 +514,7 @@ async def remove_ytb(ctx : commands.Context, ytb_channel_id : str):
         return
     
     config["youtube_survey"]["youtube_channels_id"].pop(ytb_channel_id)
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
     await ctx.respond(lang["youtube_channel_removed"])
         
@@ -532,9 +532,9 @@ async def add_help_channel(ctx : commands.Context, channel : discord.TextChannel
         help_role (discord.Role): The role that manages the help tickets.
         help_category (discord.CategoryChannel, optional): The category in which the help tickets will be created.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if str(channel.id) in config["help_system"]["channels_id"].keys():
@@ -550,7 +550,7 @@ async def add_help_channel(ctx : commands.Context, channel : discord.TextChannel
         config["help_system"]["help_category_id"] = str(help_category.id) 
         
     config["help_system"]["channels_id"][str(channel.id)] = str(help_role.id)
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
     embed = discord.Embed(title="Help ticket", description=lang["help_ticket_description"], color=discord.Color.green())
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/653287777512849419/1325952141512409149/help_thumbnail.png?ex=677da8a9&is=677c5729&hm=51331b77409b6492f7bec07411ef51eb6bc8256c92977c6d02873d0d2c1cab22&")
@@ -569,9 +569,9 @@ async def remove_help_channel(ctx : commands.Context, channel : discord.TextChan
     Args:
         channel (discord.TextChannel): The text channel from which the help ticket system will be removed.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
         
     if str(channel.id) not in config["help_system"]["channels_id"].keys():
@@ -579,7 +579,7 @@ async def remove_help_channel(ctx : commands.Context, channel : discord.TextChan
         return
         
     del config["help_system"]["channels_id"][str(channel.id)]
-    with open(f"data/servers/{ctx.guild.id}/config.json", "w") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="w", encoding="utf8") as file:
         json.dump(config, file, indent=4)
         
     try:
@@ -599,7 +599,7 @@ async def export_config(ctx: commands.Context):
         config_file: io.BytesIO = io.BytesIO(file.read())
         config: dict[str, any] = json.loads(config_file.getvalue().decode())
 
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang: dict[str, any] = json.load(file)
 
     await ctx.respond(file=discord.File(config_file, "config.json"), content=lang["server_config"])
@@ -614,9 +614,9 @@ async def import_config(ctx : commands.Context, conf_file : discord.Attachment):
     Args:
         file (discord.Attachment): The file containing the configuration to be imported.
     """
-    with open(f"data/servers/{ctx.guild.id}/config.json", "r") as file:
+    with open(f"data/servers/{ctx.guild.id}/config.json", mode="r", encoding="utf8") as file:
         config : dict[str, any] = json.load(file)
-    with open(f"data/templates/{config['language']}_lang.json", "r") as file:
+    with open(f"data/templates/{config['language']}_lang.json", mode="r", encoding="utf8") as file:
         lang : dict[str, any] = json.load(file)
     if not conf_file.filename.endswith(".json"):
         await ctx.respond(lang["not_json_file"])
